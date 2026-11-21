@@ -10,6 +10,7 @@ from .match import explain_case
 from .sop import apply_sop
 from .challenger import hard_veto, kill_close
 from .reason import render
+from .llm import refine_ambiguous
 
 
 ESC_PRIORITY = (
@@ -112,6 +113,17 @@ def decide_case(pack, docs, policy, allow):
             else:
                 # unexplained TM06/TM10 already handled in kill_close; residual RFI
                 verdict, code = "RFI", _residual_rfi(pack)
+                # Ambiguous only: no suspicion veto, no SOP close. Model may CLOSE,
+                # RFI, or ESCALATE. Invalid or invented IDs are discarded.
+                refined = refine_ambiguous(pack, docs, allow)
+                if refined:
+                    verdict, code = refined["verdict"], refined["reason_code"]
+                    extra = {
+                        "note": refined["reason"],
+                        "evidence": refined["evidence"],
+                        "reason_override": refined["reason"],
+                        "evidence_override": refined["evidence"],
+                    }
 
     if CODE_VERDICT.get(code) != verdict:
         verdict = CODE_VERDICT.get(code, verdict)
@@ -139,6 +151,11 @@ def decide_case(pack, docs, policy, allow):
             evid.append(pack["held_tx"]["transaction_id"])
         evid = _unique(evid)
 
+    if extra and extra.get("reason_override"):
+        reason = extra["reason_override"]
+        kept = [i for i in extra.get("evidence_override") or [] if i in allow]
+        if kept:
+            evid = kept
     reason = reason.replace("..", ".")
     parts = [p.strip() for p in re.split(r"(?<=[a-zA-Z0-9)])\.\s+(?=[A-Z])", reason) if p.strip()]
     if len(parts) < 2:

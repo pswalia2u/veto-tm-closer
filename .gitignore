@@ -10,3 +10,5 @@ data/
 *.bin
 .env
 claude-grok.env
+
+system/.llm_cache/

@@ -2,7 +2,7 @@
 
 A policy-bound alert closer. The closer proposes; a **challenger that cannot vote CLOSE** vetoes. It will miss some closable cases. It should not wrongfully close a mule.
 
-No language model. Standard-library Python 3 only. Same bytes every run.
+Rules first. A language model is used only on leftover ask-a-question cases, and only if `OPENROUTER_API_KEY` is set. Same bytes every run when the key is unset, or once a reply is cached.
 
 ## How to run
 
@@ -72,4 +72,6 @@ Reasons are filled templates (customer name, amount, counterparty, document id).
 
 ## Model
 
-None. Deterministic rules and parsers only. Temperature is irrelevant. Five runs produce identical verdicts, reason codes, reasons and evidence.
+Rules decide every case that has a document match, a suspicion signal, or a hard SOP downgrade. Those never call a model.
+
+Leftover cases (nothing suspicious, paperwork does not explain the alert) are an RFI. If `OPENROUTER_API_KEY` is set, that residual is sent to OpenRouter (`https://openrouter.ai/api/v1/chat/completions`), model `google/gemini-2.5-flash` unless `OPENROUTER_MODEL` is set. Temperature 0, seed 0. The model may close, ask, or escalate. A close is kept only if it cites a document or list ID that exists in the folder. Invented IDs are discarded and the rule RFI stands. Replies are cached under `system/.llm_cache/` so the five judging runs match. If the key is unset, the rule RFI is the answer. A run of 200 cases stays under 30 minutes; residual calls are the only spend, and should stay under about four US dollars.
