@@ -47,7 +47,7 @@ Typical closes: invoice/payee/date, collection reports, takings books, gift lett
 ### Gate 2
 
 - Own-account transfers that take TM01 activity to **5×** declared income/volume → `RFI_UPDATED_PROFILE`. A documented event that *is* the excess stays CLOSE.
-- Payments/FX: ≥ £10,000 to anyone other than the client needs an invoice/contract on file before CLOSE.
+- Payments/FX: ≥ £10,000 to anyone other than the client needs an invoice or contract that matches the payment. A group chart or own-account statement does not release it. An invoice that only says “payable in instalments”, with no stage amounts, is not a close.
 
 ### Challenger A (cannot be overridden by an invoice)
 

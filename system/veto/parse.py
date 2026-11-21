@@ -34,8 +34,14 @@ PUNCT_RE = re.compile(r"[^a-z0-9]+")
 def parse_money(s):
     if s is None:
         return None
-    if isinstance(s, (int, float, Decimal)):
-        return Decimal(str(s)).quantize(Decimal("0.01"))
+    if isinstance(s, float):
+        # Avoid Decimal(str(9680.129999999)) missing an exact pence match.
+        try:
+            return Decimal(format(s, ".2f"))
+        except (InvalidOperation, ValueError):
+            return None
+    if isinstance(s, (int, Decimal)):
+        return Decimal(s).quantize(Decimal("0.01"))
     s = str(s).strip()
     s = s.replace("£", "").replace(",", "").strip()
     try:

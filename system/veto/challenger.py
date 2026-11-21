@@ -93,13 +93,8 @@ def _officer_listed(pack, docs):
                         found_diff = True
         if found_same:
             return found_same
-        if found_diff:
-            return None
-        return {
-            "code": "ESC_LISTED_PARTY",
-            "evidence": [entry_id] if entry_id else [],
-            "note": "the alert matches a listed person as a company officer by name and date of birth",
-        }
+        # Different birth year, or no register on file: do not invent ESC_LISTED_PARTY.
+        return None
     return None
 
 
@@ -142,14 +137,24 @@ def kill_close(pack, docs, explanations, policy):
     explained = set(explanations.keys())
     unexplained = [a for a in pack["alerts"] if a["alert_id"] not in explained]
 
-    # goods / FX mismatch invoices
+    # goods mismatch only when the invoice contradicts what the customer declared
+    activity = " ".join([
+        pack["customer"].get("business_activity") or "",
+        pack["customer"].get("occupation") or "",
+        (pack["customer"].get("declared") or {}).get("account_purpose") or "",
+    ]).lower()
     for d in docs:
         flags = d.get("flags") or {}
-        if flags.get("electronics_hk") or flags.get("consultancy_goods"):
+        goods_bad = False
+        if flags.get("consultancy_goods") and not any(w in activity for w in ("consult", "advisory", "professional service")):
+            goods_bad = True
+        if flags.get("electronics_hk") and not any(w in activity for w in ("electron", "handset", "phone", "hardware")):
+            goods_bad = True
+        if goods_bad:
             return {
                 "code": "ESC_INVOICE_MISMATCH",
                 "evidence": [d["doc_id"]],
-                "note": "invoices on file do not support the payments (goods or currency do not match)",
+                "note": "invoices on file do not support the payments (goods do not match the customer's business)",
             }
 
     if "TM06" in rules:

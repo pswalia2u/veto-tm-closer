@@ -44,7 +44,7 @@ def _unique(ids):
         if i and i not in seen:
             seen.add(i)
             out.append(i)
-    return out[:8]
+    return out[:12]
 
 
 def _residual_rfi(pack):
@@ -117,7 +117,16 @@ def decide_case(pack, docs, policy, allow):
         verdict = CODE_VERDICT.get(code, verdict)
 
     reason, evid = render(verdict, code, pack, extra, explanations)
-    evid = [i for i in _unique(evid) if i in allow]
+    docs_first, txs = [], []
+    for i in evid:
+        if not i or i not in allow:
+            continue
+        # Document and list ids are not transaction ids (those contain -T).
+        if "-T" in i:
+            txs.append(i)
+        else:
+            docs_first.append(i)
+    evid = docs_first + txs
     if not evid:
         # still cite something real
         for a in pack["alerts"]:

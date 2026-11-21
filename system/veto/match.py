@@ -70,7 +70,13 @@ def invoice_triple(pack, docs, alert):
         if doc["type"] not in INVOICE_TYPES and doc["type"] not in {"receipt", "holding_deposit_receipt"}:
             continue
         flags = doc.get("flags") or {}
-        if flags.get("consultancy_goods") or flags.get("electronics_hk"):
+        activity = " ".join([
+            pack["customer"].get("business_activity") or "",
+            pack["customer"].get("occupation") or "",
+        ]).lower()
+        if flags.get("consultancy_goods") and not any(w in activity for w in ("consult", "advisory", "professional service")):
+            continue
+        if flags.get("electronics_hk") and not any(w in activity for w in ("electron", "handset", "phone", "hardware")):
             continue
         roles = doc.get("amount_roles") or []
         # skip unstructured instalment totals as a single-tx match; sum match handled below
@@ -94,13 +100,7 @@ def invoice_triple(pack, docs, alert):
                     ok_name = True
                 elif doc["type"] in {"dealer_invoice", "hospital_invoice"} and name_eq(doc.get("payee") or doc["title"], _counterparty(tx)):
                     ok_name = True
-                elif doc["type"] == "hospital_invoice" and (tx.get("counterparty_country") or "") == "Lebanon":
-                    ok_name = True
-                ref_ok = True
-                inv = (doc.get("invoice_no") or "").replace(" ", "").upper()
-                if inv and len(inv) >= 4 and doc["type"] in {"invoice", "supplier_invoice"}:
-                    ref_ok = inv.replace("/", "") in _ref(tx).replace(" ", "").replace("/", "") or True
-                if ok_name or (doc["type"] in {"dealer_invoice", "hospital_invoice"} and _match_tx_amount(tx, r["amount"])):
+                if ok_name:
                     if not _near(doc.get("dated"), tx_date(tx), 45) and doc["type"] not in {"contract_schedule", "payment_file"}:
                         continue
                     return Explanation(
@@ -109,28 +109,8 @@ def invoice_triple(pack, docs, alert):
                         amount=r["amount"], party=_counterparty(tx),
                         note="invoice amount and payee match the payment",
                     )
-        # TM03 PX: instalment total equals sum of alert txs
-        if flags.get("instalments"):
-            tot = None
-            for r in roles:
-                if r.get("role") in {"instalment_total", "total"}:
-                    tot = r["amount"]
-                    break
-            if tot is not None and txs:
-                s = sum((tx_amount(t) or 0) for t in txs)
-                if s == tot:
-                    names_ok = True
-                    payee = doc.get("payee") or ""
-                    if payee:
-                        names_ok = any(name_eq(payee, _counterparty(t)) for t in txs)
-                    if names_ok:
-                        return Explanation(
-                            "INVOICE_MATCHES", alert["alert_id"],
-                            doc_ids=[doc["doc_id"]],
-                            tx_ids=[t["transaction_id"] for t in txs],
-                            amount=tot, party=payee,
-                            note="invoice total equals staged payments",
-                        )
+        # Unstructured "payable in four instalments" with no stage amounts is not a close.
+        # contract_schedule rows are matched above as named stages.
         # payment_file / schedule: each row vs txs
         if doc["type"] in {"payment_file", "contract_schedule"}:
             hits = []

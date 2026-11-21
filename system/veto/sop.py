@@ -55,7 +55,8 @@ def apply_sop(pack, explanations, policy):
             if float(amt) >= threshold and not name_eq(_counterparty_name(t), client):
                 needs.append(t)
         if needs:
-            has_inv = any(ex.code in {"INVOICE_MATCHES", "GROUP_COMPANY", "OWN_ACCOUNT"} for ex in explanations.values())
+            # Group chart or own-account statement does not release a ≥£10k third-party payment.
+            has_inv = any(ex.code == "INVOICE_MATCHES" for ex in explanations.values())
             if not has_inv:
                 ev = [t["transaction_id"] for t in needs[:3]]
                 return {
