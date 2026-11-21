@@ -10,7 +10,7 @@ from .match import explain_case
 from .sop import apply_sop
 from .challenger import hard_veto, kill_close
 from .reason import render
-from .llm import refine_ambiguous
+from .llm import refine_ambiguous, warn_if_disabled
 
 
 ESC_PRIORITY = (
@@ -173,6 +173,7 @@ def decide_case(pack, docs, policy, allow):
 
 
 def run_folder(inst_dir, out_path):
+    warn_if_disabled()
     inst = load_institution(inst_dir)
     policy = inst["policy"]
     out_path = Path(out_path)

@@ -31,6 +31,16 @@ def _enabled():
     return bool(os.environ.get("XAI_API_KEY"))
 
 
+def warn_if_disabled():
+    """Print once per run. Silent when Grok will actually be called."""
+    import sys
+    if os.environ.get("VETO_LLM") == "0":
+        sys.stderr.write("VETO_LLM=0; leftovers will not use Grok.\n")
+        return
+    if not _enabled():
+        sys.stderr.write("XAI_API_KEY not set; leftovers will not use Grok.\n")
+
+
 def _model():
     return os.environ.get("XAI_MODEL") or DEFAULT_MODEL
 
