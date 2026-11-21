@@ -1,0 +1,645 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+</head>
+<body>
+<title>TM Hackathon Rule Map</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600&display=swap">
+<style>
+:root {
+  --bg: #FFFFFF;
+  --surface: #F9F9FF;
+  --ink: #1F1F1F;
+  --ink-2: #6B6B6B;
+  --line: #E7E7E7;
+  --brand: #5251FA;
+  --brand-tint: #F1F1FB;
+  --brand-ink: #3F3EF5;
+  --close-fg: #15803D;
+  --close-bg: #F0FDF4;
+  --rfi-fg: #B45309;
+  --rfi-bg: #FFFBEB;
+  --esc-fg: #B91C1C;
+  --esc-bg: #FEF2F2;
+  --font: "DM Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --mono: "DM Mono", ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  --r-sm: 8px;
+  --r-md: 16px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #111111;
+    --surface: #19191C;
+    --ink: #F3F3F5;
+    --ink-2: #A6A6AD;
+    --line: #2B2B30;
+    --brand: #8A89FF;
+    --brand-tint: #1D1D38;
+    --brand-ink: #B4B3FF;
+    --close-fg: #4ADE80;
+    --close-bg: #0F2719;
+    --rfi-fg: #FBBF24;
+    --rfi-bg: #2B2210;
+    --esc-fg: #F87171;
+    --esc-bg: #301616;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #111111;
+  --surface: #19191C;
+  --ink: #F3F3F5;
+  --ink-2: #A6A6AD;
+  --line: #2B2B30;
+  --brand: #8A89FF;
+  --brand-tint: #1D1D38;
+  --brand-ink: #B4B3FF;
+  --close-fg: #4ADE80;
+  --close-bg: #0F2719;
+  --rfi-fg: #FBBF24;
+  --rfi-bg: #2B2210;
+  --esc-fg: #F87171;
+  --esc-bg: #301616;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--ink); font-family: var(--font); font-size: 15px; line-height: 1.55; -webkit-font-smoothing: antialiased; }
+
+.wrap {
+  max-width: 1160px;
+  margin: 0 auto;
+  padding-block: 48px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid;
+  gap: 56px;
+}
+
+h1, h2, h3 { font-weight: 500; margin: 0; text-wrap: balance; }
+h1 { font-size: clamp(28px, 4vw, 42px); line-height: 1.12; letter-spacing: -0.01em; }
+h2 { font-size: 22px; line-height: 1.25; }
+h3 { font-size: 16px; line-height: 1.3; }
+p { margin: 0; }
+code { font-family: var(--mono); font-size: 0.9em; background: var(--surface); border: 1px solid var(--line); border-radius: 5px; padding: 0 5px; }
+
+.eyebrow { font-size: 12px; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; color: var(--brand); }
+header { display: grid; gap: 14px; max-width: 780px; }
+.lede { font-size: 17px; color: var(--ink-2); max-width: 66ch; }
+.meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.tag { font-size: 12px; padding: 3px 10px; border-radius: 999px; border: 1px solid var(--line); color: var(--ink-2); }
+
+section { display: grid; gap: 20px; min-width: 0; }
+.section-head { display: grid; gap: 6px; max-width: 70ch; }
+.section-head p { color: var(--ink-2); }
+
+.grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 16px; }
+.grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 16px; }
+.box { border: 1px solid var(--line); border-radius: var(--r-md); padding: 20px; display: grid; gap: 12px; align-content: start; min-width: 0; }
+.box .label { font-size: 12px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--brand); font-weight: 500; }
+.box p, .box li { color: var(--ink-2); }
+.box ul { margin: 0; padding-left: 18px; display: grid; gap: 6px; }
+.box strong { color: var(--ink); font-weight: 500; }
+
+.inst-top { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+.count { font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.count b { font-weight: 600; color: var(--ink); font-size: 15px; }
+.kv { display: grid; gap: 10px; margin: 0; }
+.kv div { display: grid; gap: 2px; }
+.kv dt { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); }
+.kv dd { margin: 0; }
+.note { background: var(--surface); border-radius: var(--r-sm); padding: 14px 16px; color: var(--ink-2); max-width: 90ch; }
+.note strong { color: var(--ink); font-weight: 500; }
+
+.scroll { overflow-x: auto; border: 1px solid var(--line); border-radius: var(--r-md); min-width: 0; }
+.scroll:focus-visible { outline: 2px solid var(--brand); outline-offset: 2px; }
+table.map { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 1000px; font-size: 14px; }
+.map th, .map td { text-align: left; vertical-align: top; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+.map thead th { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); background: var(--bg); vertical-align: bottom; }
+.map td + td, .map th + td, .map td + th, .map th + th { border-left: 1px solid var(--line); }
+.rule-col { position: sticky; left: 0; z-index: 1; background: var(--bg); width: 280px; min-width: 250px; box-shadow: 1px 0 0 var(--line); }
+.map thead .rule-col { z-index: 2; }
+.rule-col .id { display: inline-block; font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--brand-ink); background: var(--brand-tint); border-radius: 6px; padding: 1px 7px; margin-bottom: 6px; }
+.rule-col .name { display: block; font-weight: 500; font-size: 15px; line-height: 1.3; }
+.rule-col .fires { display: block; margin-top: 6px; color: var(--ink-2); font-weight: 400; font-size: 13px; line-height: 1.45; }
+.map td.on { background: var(--brand-tint); color: var(--ink); }
+.map td.off { color: var(--ink-2); }
+.off .dash { display: block; font-size: 16px; line-height: 1; color: var(--ink-2); }
+.off .why, .on .caveat { display: block; margin-top: 6px; font-size: 12.5px; line-height: 1.4; color: var(--ink-2); }
+.map tfoot th, .map tfoot td { border-bottom: 0; font-weight: 600; font-size: 15px; font-variant-numeric: tabular-nums; background: var(--surface); }
+.map tfoot .rule-col { background: var(--surface); font-weight: 500; font-size: 14px; }
+.legend { display: flex; flex-wrap: wrap; gap: 16px; font-size: 13px; color: var(--ink-2); align-items: center; }
+.legend span { display: inline-flex; align-items: center; gap: 8px; }
+.swatch { width: 14px; height: 14px; border-radius: 4px; background: var(--brand-tint); border: 1px solid var(--line); }
+.swatch.blank { background: var(--bg); }
+
+.vlabel { justify-self: start; font-family: var(--mono); font-size: 13px; font-weight: 500; padding: 3px 10px; border-radius: var(--r-sm); }
+.v-close { color: var(--close-fg); background: var(--close-bg); }
+.v-rfi { color: var(--rfi-fg); background: var(--rfi-bg); }
+.v-esc { color: var(--esc-fg); background: var(--esc-bg); }
+
+.plain { overflow-x: auto; min-width: 0; }
+table.files { border-collapse: collapse; width: 100%; font-size: 14px; min-width: 520px; }
+.files th, .files td { text-align: left; padding: 10px 12px; border-bottom: 1px solid var(--line); vertical-align: top; }
+.files th { font-size: 12px; font-weight: 500; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-2); }
+.files td:first-child { white-space: nowrap; }
+pre { margin: 0; background: var(--surface); border: 1px solid var(--line); border-radius: var(--r-sm); padding: 14px 16px; overflow-x: auto; font-family: var(--mono); font-size: 13px; line-height: 1.5; color: var(--ink); }
+
+.tree { border: 1px solid var(--line); border-radius: var(--r-md); padding: 12px 0; overflow-x: auto; min-width: 0; }
+.tree .row { display: grid; grid-template-columns: minmax(230px, 300px) 1fr; gap: 4px 20px; padding: 5px 18px; align-items: baseline; }
+.tree .name { font-family: var(--mono); font-size: 13.5px; padding-left: calc(var(--d, 0) * 22px); white-space: nowrap; }
+.tree .dir .name { font-weight: 500; color: var(--ink); }
+.tree .desc { color: var(--ink-2); font-size: 14px; }
+.tree .out { background: var(--close-bg); }
+.tree .out .name { color: var(--close-fg); }
+.tree .tag-out { font-family: var(--font); font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--close-fg); margin-left: 8px; }
+.body-text { color: var(--ink-2); max-width: 80ch; }
+.code-cell { font-family: var(--mono); font-size: 12.5px; white-space: nowrap; color: var(--ink); }
+.assess { margin: 0; padding-left: 22px; display: grid; gap: 18px; max-width: 82ch; color: var(--ink-2); }
+.assess li::marker { color: var(--brand); font-weight: 600; }
+.assess strong { color: var(--ink); font-weight: 500; }
+.assess .cost-wrap { margin-top: 12px; }
+.score-head { margin: 28px 0 8px; }
+.cost-wrap { overflow-x: auto; min-width: 0; }
+table.cost { border-collapse: collapse; font-size: 14px; font-variant-numeric: tabular-nums; min-width: 340px; }
+.cost th, .cost td { padding: 7px 12px; border-bottom: 1px solid var(--line); text-align: center; }
+.cost th { font-weight: 500; font-size: 12px; color: var(--ink-2); }
+.cost tbody th { text-align: left; color: var(--ink); font-size: 13px; }
+.cost td.zero { color: var(--ink-2); }
+.cost td.worst { color: var(--esc-fg); background: var(--esc-bg); font-weight: 600; }
+
+.sub { display: grid; gap: 12px; min-width: 0; }
+.why { margin: 0; padding-left: 20px; display: grid; gap: 8px; color: var(--ink-2); max-width: 80ch; }
+.why strong { color: var(--ink); font-weight: 500; }
+.flow { display: flex; align-items: stretch; gap: 10px; min-width: 0; }
+.flow .step { flex: 1 1 0; border: 1px solid var(--line); border-radius: var(--r-md); padding: 14px; display: grid; gap: 4px; align-content: start; min-width: 0; }
+.flow .step strong { font-weight: 500; font-size: 14.5px; line-height: 1.3; }
+.flow .step span { font-size: 13px; color: var(--ink-2); }
+.flow .step .step-n { font-family: var(--mono); font-size: 12px; color: var(--brand-ink); }
+.flow .you { border-color: var(--brand); background: var(--brand-tint); }
+.flow .you .you-tag { font-size: 11px; font-weight: 600; letter-spacing: 0.05em; text-transform: uppercase; color: var(--brand-ink); }
+.flow .arrow { align-self: center; color: var(--ink-2); font-size: 18px; line-height: 1; }
+.flow .arrow::before { content: "→"; }
+.flow .outcomes { flex: 1.35 1 0; display: grid; gap: 8px; min-width: 0; }
+.flow .outcome { border: 1px solid var(--line); border-radius: var(--r-sm); padding: 8px 10px; display: grid; gap: 4px; font-size: 13px; color: var(--ink-2); align-content: start; }
+.roles { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 16px 28px; margin: 0; }
+.roles div { border-left: 2px solid var(--line); padding-left: 14px; }
+.roles .is-you { border-left-color: var(--brand); }
+.roles dt { font-weight: 500; }
+.roles dd { margin: 4px 0 0; color: var(--ink-2); }
+.files td.amt { text-align: right; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.files th.amt { text-align: right; }
+.atag { font-family: var(--mono); font-size: 12px; font-weight: 500; color: var(--brand-ink); background: var(--brand-tint); border-radius: 6px; padding: 1px 7px; white-space: nowrap; }
+.files .vlabel { display: inline-block; margin-bottom: 4px; }
+
+@media (max-width: 860px) {
+  .flow { flex-direction: column; }
+  .flow .arrow { align-self: flex-start; padding-left: 20px; }
+  .flow .arrow::before { content: "↓"; }
+}
+
+footer { font-size: 13px; color: var(--ink-2); border-top: 1px solid var(--line); padding-top: 20px; }
+
+@media (max-width: 720px) {
+  .wrap { padding-block: 32px 56px; gap: 44px; }
+  .rule-col { position: static; box-shadow: none; }
+  .tree .row { grid-template-columns: 1fr; gap: 0; }
+  .tree .desc { padding-left: calc(var(--d, 0) * 22px); font-size: 13px; }
+}
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">Fin crime hackathon · Transaction monitoring</div>
+    <h1>Build a system that closes alerts safely</h1>
+    <p class="lede">Banks, payment firms and investment platforms run monitoring rules that raise alerts on unusual activity. Most alerts turn out to be explained, but every one has to be reviewed by an analyst. Build a system that reads an alert with its evidence and decides how to close it, as carefully and consistently as a good analyst would.</p>
+    <div class="meta">
+      <span class="tag">Four institutions</span>
+      <span class="tag">Ten monitoring rules</span>
+      <span class="tag">4,000 development cases</span>
+      <span class="tag">800 unseen test cases</span>
+      <span class="tag">UK rules, amounts in pounds</span>
+    </div>
+  </header>
+
+  <section aria-labelledby="tm-h">
+    <div class="section-head">
+      <h2 id="tm-h">What is transaction monitoring?</h2>
+      <p>A short introduction for anyone new to financial crime.</p>
+    </div>
+    <p class="body-text">Criminals need banks and payment firms to move money: to hide where it came from, to pay for crime, or to pass on money stolen from scam victims. So every bank, payment firm and investment platform has to watch the money moving through its customers' accounts for signs of crime, and report what it suspects. Watching for those signs is called <strong>transaction monitoring</strong>.</p>
+
+    <div class="sub">
+      <h3>Why firms must do it</h3>
+      <ul class="why">
+        <li><strong>The law requires it.</strong> In the UK, firms must monitor their customers' activity and report suspicion to the National Crime Agency. Firms that fail to can be fined heavily.</li>
+        <li><strong>It stops real harm.</strong> It catches money laundering, the proceeds of fraud and scams, and money moving to fund terrorism.</li>
+        <li><strong>It takes a lot of work.</strong> Automatic rules raise many alerts, and most turn out to have an ordinary explanation. Each one still needs a person to review it, which is why a system that closes the explained ones safely is valuable.</li>
+      </ul>
+    </div>
+
+    <div class="sub">
+      <h3>How it works</h3>
+      <div class="flow" role="img" aria-label="Customers move money; rules check every transaction; a rule raises an alert; an analyst reviews it and either closes it, asks the customer for information, or escalates it to the MLRO, who may report it to the authorities.">
+        <div class="step"><span class="step-n">1</span><strong>Customers move money</strong><span>Card payments, transfers, cash, investments</span></div>
+        <div class="arrow" aria-hidden="true"></div>
+        <div class="step"><span class="step-n">2</span><strong>Rules check every transaction</strong><span>For example, cash of £10,000 or more, or money in and straight out again</span></div>
+        <div class="arrow" aria-hidden="true"></div>
+        <div class="step"><span class="step-n">3</span><strong>A rule raises an alert</strong><span>A flag that something looks unusual, not proof of crime</span></div>
+        <div class="arrow" aria-hidden="true"></div>
+        <div class="step you"><span class="you-tag">Your system</span><strong>An analyst reviews the alert</strong><span>Reads the customer's profile, transactions and documents, then decides</span></div>
+        <div class="arrow" aria-hidden="true"></div>
+        <div class="outcomes">
+          <div class="outcome"><span class="vlabel v-close">CLOSE</span>The evidence explains it</div>
+          <div class="outcome"><span class="vlabel v-rfi">RFI</span>Ask the customer for one document or answer</div>
+          <div class="outcome"><span class="vlabel v-esc">ESCALATE</span>Pass to the MLRO, who may report it to the authorities</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="sub">
+      <h3>Who does what</h3>
+      <dl class="roles">
+        <div><dt>The customer</dt><dd>A person or a business with an account. They move money, and they are the one asked for documents in an RFI.</dd></div>
+        <div class="is-you"><dt>The analyst, the user of your system</dt><dd>Works through the queue of alerts. For each one they gather the evidence and decide: close it, ask the customer, or escalate. This review is called triage, and it is the step your system does.</dd></div>
+        <div><dt>The MLRO</dt><dd>The Money Laundering Reporting Officer: the senior person every regulated firm must appoint. They review escalated alerts and decide whether to file a suspicious activity report with the authorities.</dd></div>
+      </dl>
+    </div>
+
+    <div class="sub">
+      <h3>An example: Fernbrook Bakery Ltd</h3>
+      <p class="body-text">A small bakery with a business account. When it joined, it said it takes about £20,000 a month from its shop and pays UK suppliers and staff. Here is part of its month, with the three alerts the rules raised.</p>
+      <div class="plain">
+        <table class="files">
+          <thead><tr><th scope="col">Date</th><th scope="col">What happened</th><th scope="col" class="amt">In</th><th scope="col" class="amt">Out</th><th scope="col">Alert</th></tr></thead>
+          <tbody>
+            <tr><td>1 Sep</td><td>Card takings from the shop</td><td class="amt">£4,210</td><td class="amt"></td><td></td></tr>
+            <tr><td>3 Sep</td><td>Flour from Millstone Foods Ltd</td><td class="amt"></td><td class="amt">£1,860</td><td></td></tr>
+            <tr><td>5 Sep</td><td>Staff wages</td><td class="amt"></td><td class="amt">£6,400</td><td></td></tr>
+            <tr><td>9 Sep</td><td>Payment to Coldline Ovens Ltd</td><td class="amt"></td><td class="amt">£18,500</td><td><span class="atag">A</span></td></tr>
+            <tr><td>16 Sep</td><td>Money from Jordan Fernley, a private person</td><td class="amt">£25,000</td><td class="amt"></td><td><span class="atag">B</span></td></tr>
+            <tr><td>22 to 23 Sep</td><td>12 payments from different people, £400 to £950 each</td><td class="amt">£8,900</td><td class="amt"></td><td><span class="atag">C</span></td></tr>
+            <tr><td>23 Sep</td><td>Sent to an account in another country</td><td class="amt"></td><td class="amt">£8,700</td><td><span class="atag">C</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="plain">
+        <table class="files">
+          <thead><tr><th scope="col">Alert</th><th scope="col">Why the rule fired</th><th scope="col">What the analyst finds</th><th scope="col">Outcome</th></tr></thead>
+          <tbody>
+            <tr><td><span class="atag">A</span></td><td>A payment far bigger than the bakery usually makes</td><td>An invoice from Coldline Ovens Ltd for a new oven, for the same amount, to the same company</td><td><span class="vlabel v-close">CLOSE</span><br>The invoice explains the payment.</td></tr>
+            <tr><td><span class="atag">B</span></td><td>Money in far above what the bakery said it expects</td><td>Nothing on file says what the money is. Nothing about it looks criminal.</td><td><span class="vlabel v-rfi">RFI</span><br>Ask what it is, for example the loan agreement if it is a loan from the director.</td></tr>
+            <tr><td><span class="atag">C</span></td><td>Money in from many people, and straight out again</td><td>Two of the senders' banks report their customers were scammed. The bakery calls the payments catering orders, but there are no orders.</td><td><span class="vlabel v-esc">ESCALATE</span><br>The MLRO decides whether to report it.</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="note"><strong>Every case in the hackathon looks like this.</strong> You get the alerts, the customer, their transactions and the documents on file, and your system plays the analyst. Closing alert C would be the worst possible mistake.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="challenge-h">
+    <div class="section-head">
+      <h2 id="challenge-h">The challenge</h2>
+    </div>
+    <div class="grid-3">
+      <article class="box">
+        <span class="label">You get</span>
+        <p><strong>4,000 development cases</strong>, 1,000 from each institution, with each institution's SOP. Every case has its alerts, the customer's profile, their transactions, the documents on file, earlier reviews and the institution's internal list. The cases have no answers.</p>
+      </article>
+      <article class="box">
+        <span class="label">You build</span>
+        <p><strong>A system</strong> that reads a folder of cases and writes a verdict, a reason and the evidence it relied on for every case. It can use rules, language models or both.</p>
+      </article>
+      <article class="box">
+        <span class="label">We test</span>
+        <p><strong>Your system, five times, on 800 cases it has never seen</strong>, 200 from each institution, from the same institutions, in the same format and under the same policies. Those unseen cases decide the result.</p>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="verdict-h">
+    <div class="section-head">
+      <h2 id="verdict-h">How a case closes</h2>
+      <p>Every case ends in one of three verdicts, with a reason.</p>
+    </div>
+    <div class="grid-3">
+      <article class="box">
+        <span class="vlabel v-close">CLOSE</span>
+        <p>The evidence explains all the activity the alerts raised and it fits what the institution knows about the customer. At the payments and FX firm, a held payment is released.</p>
+      </article>
+      <article class="box">
+        <span class="vlabel v-rfi">RFI</span>
+        <p>Request for information: nothing is suspicious yet, and one specific document or answer from the customer would settle the case. The reason must say what to ask for.</p>
+      </article>
+      <article class="box">
+        <span class="vlabel v-esc">ESCALATE</span>
+        <p>Escalate to the MLRO: the activity is unexplained or there are signs of crime. The MLRO decides whether to report it.</p>
+      </article>
+    </div>
+    <p class="note"><strong>Once there is suspicion, escalate rather than ask the customer.</strong> Asking questions at that point risks tipping them off, which is an offence.</p>
+    <p class="note"><strong>One case gets one verdict, even when several rules fired.</strong> Close a case only when the evidence explains every alert in it. At the payments and FX firm, an outgoing payment held by an alert is one case. Everywhere else, a case is one customer over the review window.</p>
+  </section>
+
+  <section aria-labelledby="inst-h">
+    <div class="section-head">
+      <h2 id="inst-h">The four institutions</h2>
+      <p>Four separate companies. Each produces a different kind of data and runs its own rules, so the same rule looks different from one to the next. Each has its own SOP in <code>POLICY.md</code>; read all four.</p>
+    </div>
+    <div class="grid-4">
+      <article class="box">
+        <div class="inst-top"><h3>Bank</h3><span class="count"><b>8</b> rules</span></div>
+        <dl class="kv">
+          <div><dt>Customers</dt><dd>Individuals and small businesses with current accounts</dd></div>
+          <div><dt>Data</dt><dd>Cash at branches and ATMs, bank transfers and card spending, with each counterparty's name and country</dd></div>
+        </dl>
+      </article>
+      <article class="box">
+        <div class="inst-top"><h3>Payments and FX firm</h3><span class="count"><b>8</b> rules</span></div>
+        <dl class="kv">
+          <div><dt>Customers</dt><dd>Businesses paying suppliers and staff abroad</dd></div>
+          <div><dt>Data</dt><dd>Funding from the client's own bank, payments abroad in other currencies, invoices and payment files</dd></div>
+          <div><dt>Alerts</dt><dd>An alert on an outgoing payment holds it until a decision is made</dd></div>
+        </dl>
+      </article>
+      <article class="box">
+        <div class="inst-top"><h3>E-money firm</h3><span class="count"><b>8</b> rules</span></div>
+        <dl class="kv">
+          <div><dt>Customers</dt><dd>Individuals and small businesses with app-based accounts</dd></div>
+          <div><dt>Data</dt><dd>Top-ups by bank transfer and cash at shops, transfers to other people, card spending and ATM withdrawals</dd></div>
+        </dl>
+      </article>
+      <article class="box">
+        <div class="inst-top"><h3>Investment firm</h3><span class="count"><b>7</b> rules</span></div>
+        <dl class="kv">
+          <div><dt>Customers</dt><dd>Individual investors on a broker and fund platform</dd></div>
+          <div><dt>Data</dt><dd>Deposits and withdrawals with sender and recipient names, fund purchases and sales</dd></div>
+        </dl>
+      </article>
+    </div>
+  </section>
+
+  <section aria-labelledby="map-h">
+    <div class="section-head">
+      <h2 id="map-h">Rules by institution</h2>
+      <p>A shaded cell shows what the rule watches at that institution. Exact limits are in each <code>POLICY.md</code>.</p>
+    </div>
+    <div class="legend">
+      <span><i class="swatch"></i>Rule runs</span>
+      <span><i class="swatch blank"></i>Rule does not run</span>
+    </div>
+    <div class="scroll" role="region" aria-label="Rules by institution table" tabindex="0">
+      <table class="map">
+        <thead>
+          <tr>
+            <th class="rule-col" scope="col">Rule</th>
+            <th scope="col">Bank</th>
+            <th scope="col">Payments and FX firm</th>
+            <th scope="col">E-money firm</th>
+            <th scope="col">Investment firm</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM01</span><span class="name">Activity exceeds the expected profile</span><span class="fires">Money received over 30 days is well above what the customer declared.</span></th>
+            <td class="on">Inflows against declared income or turnover</td>
+            <td class="on">Funding against the client's expected payment volume</td>
+            <td class="on">Inflows against declared income or turnover</td>
+            <td class="on">Deposits against declared income</td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM02</span><span class="name">Rapid movement of funds</span><span class="fires">Most of the money that comes in leaves again quickly.</span></th>
+            <td class="on">Paid out within 48 hours of arriving</td>
+            <td class="on">Money from anyone other than the client, paid out within 48 hours<span class="caveat">Funding and paying out at once is the product, so the client's own funding does not count</span></td>
+            <td class="on">Paid out within 48 hours of arriving</td>
+            <td class="on">Withdrawn within 10 days with little invested</td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM03</span><span class="name">Repeated transactions below a threshold</span><span class="fires">Several transactions sit just under a limit within 10 days.</span></th>
+            <td class="on">Cash deposits just under £10,000</td>
+            <td class="on">Payments to one beneficiary just under £10,000, the point where an invoice is needed</td>
+            <td class="on">Cash top-ups just under £1,000</td>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">Does not run</span></td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM04</span><span class="name">Many-to-one or one-to-many payments</span><span class="fires">Unusually many different people pay the account, or are paid by it.</span></th>
+            <td class="on">More than six payers or payees in 30 days</td>
+            <td class="on">More than 25 beneficiaries in 30 days</td>
+            <td class="on">More than six payers or payees in 30 days</td>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">Does not run</span></td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM05</span><span class="name">Large or unexpected cash</span><span class="fires">One large cash transaction.</span></th>
+            <td class="on">Cash deposit or withdrawal of £10,000 or more</td>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">No cash</span></td>
+            <td class="on">Cash top-up of £1,000 or more</td>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">No cash</span></td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM06</span><span class="name">Unexpected higher-risk country</span><span class="fires">Money to or from a higher-risk country the customer did not declare.</span></th>
+            <td class="on">Transfers to or from the country</td>
+            <td class="on">Beneficiary country</td>
+            <td class="on">Transfers to or from the country</td>
+            <td class="on">Where deposits come from and withdrawals go</td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM07</span><span class="name">Dormant account reactivation</span><span class="fires">Money moves after 180 days with no activity.</span></th>
+            <td class="on">Dormant account</td>
+            <td class="on">Dormant client account</td>
+            <td class="on">Dormant account</td>
+            <td class="on">Dormant account</td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM08</span><span class="name">Third-party funding or payout</span><span class="fires">The account holder's name on the other side is not the customer's.</span></th>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">Third-party payments are normal on a current account</span></td>
+            <td class="on">Funding from an account not in the client's name</td>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">Paying other people is the product</span></td>
+            <td class="on">Deposits from, or withdrawals to, someone else</td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM10</span><span class="name">Unusually early fund redemption</span><span class="fires">Fund units sold back within 90 days of being bought.</span></th>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">Does not run</span></td>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">Does not run</span></td>
+            <td class="off"><span class="dash" aria-hidden="true">–</span><span class="why">Does not run</span></td>
+            <td class="on">Fund units bought, then sold back</td>
+          </tr>
+          <tr>
+            <th scope="row" class="rule-col"><span class="id">TM22</span><span class="name">Counterparty on an internal list</span><span class="fires">A payer, recipient or company officer matches the internal list by name, address, date of birth or identifier.</span></th>
+            <td class="on">Payer or recipient</td>
+            <td class="on">Beneficiary or its officers</td>
+            <td class="on">Payer or recipient</td>
+            <td class="on">Who deposits the money</td>
+          </tr>
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row" class="rule-col">Rules that run</th>
+            <td>8</td>
+            <td>8</td>
+            <td>8</td>
+            <td>7</td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  </section>
+
+  <section aria-labelledby="policy-h">
+    <div class="section-head">
+      <h2 id="policy-h">Policy settings to apply</h2>
+      <p>The SOPs set these out in full. They are the ones that most often decide a case.</p>
+    </div>
+    <div class="grid-3">
+      <article class="box">
+        <span class="label">Own accounts</span>
+        <p>Money moving between the customer's own accounts explains activity only when a document on file shows the customer holds the other account. When such transfers bring activity to <strong>five times the declared income or volume or more</strong>, send an RFI for an updated expected income or volume. Below five times, close.</p>
+      </article>
+      <article class="box">
+        <span class="label">The internal list</span>
+        <p>A match on one detail alone does not prove it is the same party. Close a list match only when the evidence shows the counterparty is someone else. If nothing settles it either way, send an RFI. If the listed party is the counterparty or controls it, escalate.</p>
+      </article>
+      <article class="box">
+        <span class="label">Earlier reviews and invoices</span>
+        <p>An earlier review covers only what it describes, never new or larger activity. At the payments and FX firm, a payment of <strong>£10,000 or more</strong> to anyone other than the client needs an invoice or contract on file before it is released.</p>
+      </article>
+    </div>
+    <p class="note"><strong>Context, not triggers:</strong> round amounts, a shared device, IP address or contact details, a recipient added the same day, and crypto or gambling counterparties add context to a case. None of them raises an alert on its own.</p>
+  </section>
+
+  <section aria-labelledby="data-h">
+    <div class="section-head">
+      <h2 id="data-h">The data, and where your output goes</h2>
+      <p>Each institution comes as one folder, and the unseen test cases come in folders with exactly the same files. Your system writes one file per institution into <code>output/</code>.</p>
+    </div>
+    <div class="tree" aria-label="Folder structure">
+      <div class="row dir" style="--d:0"><span class="name">hackathon/</span><span class="desc"></span></div>
+      <div class="row" style="--d:1"><span class="name">README.md</span><span class="desc">Start here: the short version of this brief, with the reason codes</span></div>
+      <div class="row" style="--d:1"><span class="name">BRIEF.html</span><span class="desc">This page, to read offline</span></div>
+      <div class="row dir" style="--d:1"><span class="name">institutions/</span><span class="desc">The development cases, one folder per institution, 1,000 cases each</span></div>
+      <div class="row dir" style="--d:2"><span class="name">bank/</span><span class="desc">One institution's cases</span></div>
+      <div class="row" style="--d:3"><span class="name">POLICY.md</span><span class="desc">The institution's SOP: verdicts, what a case is, its rules and limits, and its policy settings</span></div>
+      <div class="row" style="--d:3"><span class="name">cases.jsonl</span><span class="desc">One case per line: the customer, the review window, the alert IDs in the case and any held payment</span></div>
+      <div class="row" style="--d:3"><span class="name">alerts.jsonl</span><span class="desc">Each alert: its ID, the rule, what it measured and the transactions it fired on</span></div>
+      <div class="row" style="--d:3"><span class="name">customers.jsonl</span><span class="desc">Customer details and what they declared when they joined</span></div>
+      <div class="row" style="--d:3"><span class="name">transactions.jsonl</span><span class="desc">Transactions on each customer's accounts</span></div>
+      <div class="row" style="--d:3"><span class="name">evidence.jsonl</span><span class="desc">The documents on file for each customer, with their IDs</span></div>
+      <div class="row dir" style="--d:3"><span class="name">evidence/</span><span class="desc">One Markdown file per document</span></div>
+      <div class="row" style="--d:4"><span class="name">KYC-6179.md</span><span class="desc">For example, a due diligence summary</span></div>
+      <div class="row" style="--d:4"><span class="name">INV-7291.md</span><span class="desc">For example, an invoice</span></div>
+      <div class="row" style="--d:3"><span class="name">previous_reviews.jsonl</span><span class="desc">Earlier alert reviews for these customers</span></div>
+      <div class="row" style="--d:3"><span class="name">internal_list.jsonl</span><span class="desc">The institution's internal list</span></div>
+      <div class="row dir" style="--d:2"><span class="name">emoney/</span><span class="desc">Same files</span></div>
+      <div class="row dir" style="--d:2"><span class="name">investment/</span><span class="desc">Same files</span></div>
+      <div class="row dir" style="--d:2"><span class="name">payments_fx/</span><span class="desc">Same files</span></div>
+      <div class="row dir out" style="--d:1"><span class="name">system/<span class="tag-out">You write</span></span><span class="desc">Your system: the <code>run</code> executable and a <code>README.md</code> on how it decides</span></div>
+      <div class="row dir out" style="--d:1"><span class="name">output/<span class="tag-out">You write</span></span><span class="desc">The classification your system makes for every development case</span></div>
+      <div class="row out" style="--d:2"><span class="name">bank.jsonl</span><span class="desc">One line per case in <code>institutions/bank/cases.jsonl</code></span></div>
+      <div class="row out" style="--d:2"><span class="name">emoney.jsonl</span><span class="desc">One line per case in <code>institutions/emoney/cases.jsonl</code></span></div>
+      <div class="row out" style="--d:2"><span class="name">investment.jsonl</span><span class="desc">One line per case in <code>institutions/investment/cases.jsonl</code></span></div>
+      <div class="row out" style="--d:2"><span class="name">payments_fx.jsonl</span><span class="desc">One line per case in <code>institutions/payments_fx/cases.jsonl</code></span></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="deliver-h">
+    <div class="section-head">
+      <h2 id="deliver-h">What to deliver</h2>
+      <p>A runnable system, a short README on how it decides, and its output on the development cases. We call the system once per institution folder:</p>
+    </div>
+    <pre>system/run institutions/bank output/bank.jsonl</pre>
+    <p class="body-text">On the unseen cases we pass full paths and run it from inside <code>system/</code>, so it must not depend on any other working directory.</p>
+    <p class="body-text">Each output file has one JSON line per case. The line covers every alert in the case, because one verdict decides them all:</p>
+    <pre>{"case_id": "BK-CS112964", "alert_ids": ["BK-AL4810357"], "verdict": "CLOSE", "reason_code": "LIST_MATCH_DIFFERENT_PARTY", "reason": "The joinery firm's director shares the listed person's name, but the company register gives a birth year of 1993, not 1972. The £3,150.72 payment matches the firm's invoice for fitted wardrobes.", "evidence": ["REG-5461", "INV-7291", "BK-L37007"]}</pre>
+    <div class="plain">
+      <table class="files">
+        <thead><tr><th scope="col">Field</th><th scope="col">Type</th><th scope="col">What it holds</th></tr></thead>
+        <tbody>
+          <tr><td><code>case_id</code></td><td>ID</td><td>The case, from <code>cases.jsonl</code></td></tr>
+          <tr><td><code>alert_ids</code></td><td>List of IDs</td><td>Every alert in the case, from <code>alerts.jsonl</code></td></tr>
+          <tr><td><code>verdict</code></td><td>Enum</td><td><code>CLOSE</code>, <code>RFI</code> or <code>ESCALATE</code></td></tr>
+          <tr><td><code>reason_code</code></td><td>Enum</td><td>The main ground for the verdict, from the list below. It must belong to the verdict given</td></tr>
+          <tr><td><code>reason</code></td><td>Free text</td><td>Two to four sentences naming the specific facts and documents relied on. For an RFI, exactly what to ask the customer for</td></tr>
+          <tr><td><code>evidence</code></td><td>List of IDs</td><td>The documents, transactions or list entries relied on, exactly as their IDs appear in the files</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="plain">
+      <table class="files">
+        <thead><tr><th scope="col">Verdict</th><th scope="col">Reason code</th><th scope="col">Use it when</th></tr></thead>
+        <tbody>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">COLLECTION_DOCUMENTED</td><td>A documented collection made on behalf of named people explains the payments</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">BUSINESS_RECORDS_RECONCILE</td><td>Business records, such as takings or collection reports, reconcile to the activity</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">DOCUMENTED_EVENT</td><td>A documented one-off event, such as a sale, an inheritance or a payout, explains the funds</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">INVOICE_MATCHES</td><td>An invoice, contract or payment file matches the amount, payee and date</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">OWN_ACCOUNT</td><td>The money moved between accounts the customer is shown to hold</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">GROUP_COMPANY</td><td>The counterparty is a verified company in the same group</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">THIRD_PARTY_DOCUMENTED</td><td>A documented relationship explains a third-party payer</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">REFUND_OF_EARLIER_PAYMENT</td><td>The money is a refund of an earlier payment</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">RETURNING_CUSTOMER</td><td>A verified customer resumed using a dormant account</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">LIST_MATCH_DIFFERENT_PARTY</td><td>The evidence shows the counterparty is not the listed party</td></tr>
+          <tr><td><span class="vlabel v-close">CLOSE</span></td><td class="code-cell">WITHIN_PROFILE</td><td>The activity fits the customer's declared profile or instructions</td></tr>
+          <tr><td><span class="vlabel v-rfi">RFI</span></td><td class="code-cell">RFI_PURPOSE_DOCUMENTS</td><td>Ask for documents showing what the payments were for</td></tr>
+          <tr><td><span class="vlabel v-rfi">RFI</span></td><td class="code-cell">RFI_BUSINESS_RECORDS</td><td>Ask for the business records behind the activity</td></tr>
+          <tr><td><span class="vlabel v-rfi">RFI</span></td><td class="code-cell">RFI_SOURCE_OF_FUNDS</td><td>Ask for proof of where the money came from</td></tr>
+          <tr><td><span class="vlabel v-rfi">RFI</span></td><td class="code-cell">RFI_COUNTERPARTY_DETAILS</td><td>Ask who the counterparty is and what the payment was for</td></tr>
+          <tr><td><span class="vlabel v-rfi">RFI</span></td><td class="code-cell">RFI_UPDATED_PROFILE</td><td>Ask for an updated expected income or volume</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_MULE_ACTIVITY</td><td>The account receives and passes on other people's money for someone else</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_STRUCTURING</td><td>Transactions were split to stay under a threshold</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_UNEXPLAINED_FUNDS</td><td>The money has no credible explanation and was moved on</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_PASS_THROUGH</td><td>Money passes through with no credible purpose, often to linked parties</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_INVOICE_MISMATCH</td><td>The invoices do not support the payments</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_HIGH_RISK_CORRIDOR</td><td>Unexplained payments to or from a higher-risk country</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_ACCOUNT_MISUSE</td><td>Someone other than the customer appears to control or use the account</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_THIRD_PARTY_FUNDING</td><td>Unrelated third parties fund the account or receive money from it</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_EARLY_REDEMPTION</td><td>Fund units are bought and quickly sold back to move money</td></tr>
+          <tr><td><span class="vlabel v-esc">ESCALATE</span></td><td class="code-cell">ESC_LISTED_PARTY</td><td>The counterparty is the listed party or is controlled by it</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note"><strong>Build for cases you have not seen.</strong> Nothing from the development cases, such as case IDs, names or amounts, may be built into the system. It reads only the folder it is given, writes only its output file, and a run of 200 cases should finish within 30 minutes. A case missing from the output counts as an escalation.</p>
+  </section>
+
+  <section aria-labelledby="assess-h">
+    <div class="section-head">
+      <h2 id="assess-h">How systems are assessed</h2>
+      <p>We run your system five times on the unseen cases and look at four things.</p>
+    </div>
+    <ol class="assess">
+      <li>
+        <strong>The most correct results with the fewest mistakes.</strong> Close as many closable cases as you can while making as few wrong decisions as possible. A wrongful close, closing a case that needed an RFI or an escalation, is the worst mistake. Escalating everything is penalised too. Each decision is costed per case, and lower is better:
+        <div class="cost-wrap">
+          <table class="cost">
+            <thead><tr><th scope="col">Right verdict</th><th scope="col">You sent CLOSE</th><th scope="col">You sent RFI</th><th scope="col">You sent ESCALATE</th></tr></thead>
+            <tbody>
+              <tr><th scope="row">CLOSE</th><td class="zero">0</td><td>3</td><td>3</td></tr>
+              <tr><th scope="row">RFI</th><td class="worst">10</td><td class="zero">0</td><td>2</td></tr>
+              <tr><th scope="row">ESCALATE</th><td class="worst">10</td><td>3</td><td class="zero">0</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </li>
+      <li><strong>Explainable evidence.</strong> Every verdict needs a reason code and a reason that names the specific facts it rests on, and <code>evidence</code> lists the IDs of the documents, transactions or list entries relied on. Cited IDs must exist in the case's files, and the evidence that decides the case should be among them.</li>
+      <li><strong>The same results every time.</strong> The five runs must give the same verdicts and reason codes, and ideally the same evidence. A system whose answer changes from run to run cannot be trusted with an alert queue.</li>
+      <li><strong>Precision on verdict and reason.</strong> For every case with the right verdict, the reason is scored on three things: whether <code>evidence</code> includes the documents that decide the case, whether the reason gives the grounds the right answer relies on, and whether it names this case's own documents, people and amounts rather than wording that would fit any case. A correct verdict with a generic or wrong reason scores little.</li>
+    </ol>
+    <h3 class="score-head">The score, out of 100</h3>
+    <div class="plain">
+      <table class="files">
+        <thead><tr><th scope="col">Part</th><th scope="col">Weight</th><th scope="col">What counts</th></tr></thead>
+        <tbody>
+          <tr><td>Unseen cases</td><td>60%</td><td>Verdicts 60%, reasons 40%</td></tr>
+          <tr><td>Development cases</td><td>20%</td><td>Verdicts 60%, reasons 40%</td></tr>
+          <tr><td>Reproducibility</td><td>20%</td><td>Same verdict and reason code in all five runs</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <p class="note">Escalating everything scores 0 on verdicts. Reproducibility points grow with the unseen score, so repeating poor results earns little.</p>
+  </section>
+
+  <footer>Every customer, company, account and document in the dataset is invented.</footer>
+</div>
+
+</body>
+</html>

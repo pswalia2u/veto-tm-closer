@@ -1,0 +1,12 @@
+institutions/
+__MACOSX/
+.DS_Store
+**/__pycache__/
+*.pyc
+*.pyo
+.Python
+hackathon.zip
+data/
+*.bin
+.env
+claude-grok.env

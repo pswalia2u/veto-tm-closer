@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Veto — TM closer</title>
+<style>
+  :root { --bg:#0f1419; --card:#1a2332; --ink:#e8eef6; --muted:#8aa0b8; --close:#3dd68c; --rfi:#f5c542; --esc:#ff6b6b; --line:#2a3a4f; }
+  * { box-sizing: border-box; }
+  body { margin:0; font-family: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif; background:var(--bg); color:var(--ink); }
+  header { padding:28px 36px 8px; }
+  header h1 { margin:0; font-size:28px; letter-spacing:-0.03em; }
+  header p { color:var(--muted); max-width:720px; }
+  .row { display:flex; gap:16px; padding:16px 36px 36px; flex-wrap:wrap; }
+  .card { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:18px 18px 16px; flex:1; min-width:280px; }
+  .tag { display:inline-block; font-size:11px; font-weight:700; letter-spacing:.08em; padding:4px 8px; border-radius:999px; }
+  .CLOSE { background:#143d2c; color:var(--close); }
+  .RFI { background:#3d3214; color:var(--rfi); }
+  .ESCALATE { background:#3d1418; color:var(--esc); }
+  h2 { margin:10px 0 6px; font-size:18px; }
+  .meta { color:var(--muted); font-size:13px; margin-bottom:10px; }
+  ul { margin:8px 0; padding-left:18px; color:#c9d6e5; font-size:14px; line-height:1.45; }
+  .veto { margin-top:12px; padding:10px 12px; border-left:3px solid var(--esc); background:#2a1518; font-size:13px; }
+  .ok { margin-top:12px; padding:10px 12px; border-left:3px solid var(--close); background:#10241c; font-size:13px; }
+  .ask { margin-top:12px; padding:10px 12px; border-left:3px solid var(--rfi); background:#2a2410; font-size:13px; }
+  footer { padding:0 36px 28px; color:var(--muted); font-size:13px; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Veto</h1>
+  <p>A policy-bound transaction-monitoring closer. The closer proposes; a challenger that is <em>not allowed to close</em> vetoes. Same three outcomes a UK analyst uses: CLOSE, RFI, ESCALATE. Tipping-off is an offence — once there is suspicion, we escalate.</p>
+</header>
+<div class="row">
+  <article class="card">
+    <span class="tag CLOSE">CLOSE · INVOICE_MATCHES</span>
+    <h2>Nico Falcombe · electrician</h2>
+    <div class="meta">Bank · TM01 + TM02 · loan in, dealer out</div>
+    <ul>
+      <li>Penwell Finance loan £22,550 (LOA-2046)</li>
+      <li>Rayholt Motors invoice £23,400 (INV-1672)</li>
+      <li>In-then-out is a car purchase, not a mule</li>
+    </ul>
+    <div class="ok">Gate 1 matched amount, payee and date. Challenger found no fraud report, no list hit, no structuring. Close.</div>
+  </article>
+  <article class="card">
+    <span class="tag RFI">RFI · SOURCE OF FUNDS</span>
+    <h2>Nico Lynbrook · civil engineer</h2>
+    <div class="meta">Bank · TM01 only · £52,737 in the window</div>
+    <ul>
+      <li>£49,744 from Stanwell Solicitors “ESTATE OF KIT FALCOMBE”</li>
+      <li>No solicitor letter on file</li>
+      <li>Contact note is an unrelated tariff enquiry</li>
+    </ul>
+    <div class="ask">Nothing criminal on its face. Ask for the grant or solicitor letter confirming the estate distribution. Do not escalate; do not close.</div>
+  </article>
+  <article class="card">
+    <span class="tag ESCALATE">ESCALATE · MULE</span>
+    <h2>Charlie Hartcote · student</h2>
+    <div class="meta">Bank · TM01 + TM02 + TM04 · 11 inbound counterparties</div>
+    <ul>
+      <li>Two APP-scam reports from sending banks (RPT-1276, RPT-737)</li>
+      <li>Chat: “payments assistant”, keeps 8%, forwards to Coinvale</li>
+      <li>A naive closer would treat this as “active customer”</li>
+    </ul>
+    <div class="veto"><strong>Challenger veto.</strong> Fraud reports are stolen credits, not an explanation. Never RFI — that would tip the customer off. Escalate to the MLRO.</div>
+  </article>
+</div>
+<footer>Fernbrook Bakery A / B / C, as live cases. Scoring system does not hardcode these ids — the demo page may.</footer>
+</body>
+</html>
