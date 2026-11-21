@@ -16,8 +16,8 @@ from pathlib import Path
 
 from . import CODE_VERDICT, CLOSE_CODES, RFI_CODES, ESC_CODES
 
-API = "https://api.x.ai/v1/chat/completions"
-DEFAULT_MODEL = "grok-4.20-0309-non-reasoning"
+DEFAULT_BASE = "https://api.x.ai/v1"
+DEFAULT_MODEL = "grok-4.7"
 CACHE_DIR = Path(__file__).resolve().parent.parent / ".llm_cache"
 
 SYSTEM = """You close UK transaction-monitoring alerts. One verdict for the whole case.
@@ -33,6 +33,14 @@ def _enabled():
 
 def _model():
     return os.environ.get("XAI_MODEL") or DEFAULT_MODEL
+
+
+def _base():
+    return (os.environ.get("XAI_BASE_URL") or DEFAULT_BASE).rstrip("/")
+
+
+def _endpoint():
+    return _base() + "/chat/completions"
 
 
 def _clip(text, n):
@@ -101,7 +109,7 @@ def _cache_path(body):
 def _post(body):
     key = os.environ["XAI_API_KEY"]
     req = urllib.request.Request(
-        API,
+        _endpoint(),
         data=body.encode("utf-8"),
         headers={
             "Authorization": "Bearer " + key,
@@ -178,7 +186,7 @@ def refine_ambiguous(pack, docs, allow):
         ],
     }
     body = json.dumps(payload, sort_keys=True, ensure_ascii=True)
-    path = _cache_path(body)
+    path = _cache_path(_endpoint() + "\n" + body)
     raw = None
     use_cache = os.environ.get("VETO_LLM_NOCACHE") != "1"
     path.parent.mkdir(parents=True, exist_ok=True)

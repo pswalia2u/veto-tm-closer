@@ -33,7 +33,7 @@ It works in four steps:
 1. **Look for a document that explains the payment.** Invoice matches the amount and the company. Loan matches the car. Gift letter matches the payer. Bank statement shows it is their own other account.
 2. **Apply the bank's written rules.** For example: if it is only money moving between their own accounts, and it is more than five times what they said they earn, do not close it. Ask them to update their expected income. A payment over £10,000 needs an invoice before you release it.
 3. **A second checker that is not allowed to say "close".** It only looks for reasons to stop a close. A bank wrote in saying their customer was scammed into sending that money. Someone on a do-not-deal list still controls the company. The customer asked how to stay under £10,000 so nobody notices. If any of that is true, close is killed. Send it upstairs.
-4. **Only the leftovers go to Grok.** If the rules found no document and no sign of crime, the case would have been "ask a question". That is the ambiguous pile. Grok (`grok-4.20`, no reasoning, temperature 0) may close, ask, or send it upstairs. A close is kept only if it names a document that is actually in the folder. A made-up invoice is thrown away. Fraud, list hits, and matched invoices never reach the model.
+4. **Only the leftovers go to Grok.** If the rules found no document and no sign of crime, the case would have been "ask a question". That is the ambiguous pile. By default that call is `grok-4.7` at `https://api.x.ai/v1`, temperature 0. It may close, ask, or send it upstairs. A close is kept only if it names a document that is actually in the folder. A made-up invoice is thrown away. Fraud, list hits, and matched invoices never reach the model.
 
 The name is the point: the first part proposes, the second part can veto. The model does not get a veto override.
 
@@ -50,7 +50,27 @@ cd system
 ./run /path/to/institutions/bank /path/to/output/bank.jsonl
 ```
 
-Same command for `emoney`, `investment`, and `payments_fx`. About one second per thousand cases when no key is set. With `XAI_API_KEY` set, only leftover cases call `https://api.x.ai/v1`. The first reply is cached, so five runs match.
+Same command for `emoney`, `investment`, and `payments_fx`. About one second per thousand cases when no key is set. With `XAI_API_KEY` set, only leftover cases call the model. The first reply for each case is cached, so five runs on the same folder match.
+
+## Configure the model
+
+The call is the OpenAI chat-completions shape: `POST {base}/chat/completions`, bearer token, JSON body with `model`, `temperature`, and `messages`.
+
+| Variable | Default | What it does |
+|---|---|---|
+| `XAI_API_KEY` | unset | If unset, leftovers stay "ask a question". No call. |
+| `XAI_MODEL` | `grok-4.7` | Model id. Use another id from `GET https://api.x.ai/v1/models`, for example `grok-4.6` or `grok-4.20-0309-non-reasoning`. |
+| `XAI_BASE_URL` | `https://api.x.ai/v1` | OpenAI-compatible base URL. The program appends `/chat/completions`. Point this at another host if you must. Judging expects xAI. |
+| `VETO_LLM` | unset | Set to `0` to force rules only, even if a key is present. |
+
+```
+export XAI_API_KEY=...
+export XAI_MODEL=grok-4.7
+export XAI_BASE_URL=https://api.x.ai/v1
+system/run institutions/bank output/bank.jsonl
+```
+
+Changing the model or the base URL changes the cache key. Old replies are not reused.
 
 ## Layout
 
