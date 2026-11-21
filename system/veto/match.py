@@ -93,6 +93,8 @@ def invoice_triple(pack, docs, alert):
                 if not _match_tx_amount(tx, r["amount"]):
                     continue
                 party = r.get("name") or doc.get("payee") or ""
+                bill_to = (doc.get("fields") or {}).get("bill to") or ""
+                cust_name = pack["customer"].get("name") or ""
                 ok_name = False
                 if party and name_eq(party, _counterparty(tx)):
                     ok_name = True
@@ -100,6 +102,10 @@ def invoice_triple(pack, docs, alert):
                     ok_name = True
                 elif doc["type"] in {"dealer_invoice", "hospital_invoice"} and name_eq(doc.get("payee") or doc["title"], _counterparty(tx)):
                     ok_name = True
+                # Customer issued the invoice: inbound from the billed party.
+                elif tx.get("direction") == "in" and bill_to and name_eq(bill_to, _counterparty(tx)):
+                    if not cust_name or name_eq(doc.get("payee") or "", cust_name) or name_eq(cust_name, doc.get("payee") or ""):
+                        ok_name = True
                 if ok_name:
                     if not _near(doc.get("dated"), tx_date(tx), 45) and doc["type"] not in {"contract_schedule", "payment_file"}:
                         continue

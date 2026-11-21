@@ -67,33 +67,39 @@ def _officer_listed(pack, docs):
         entry_id = hit.get("entry_id")
         list_name = entry.get("name") or hit.get("matched_party") or ""
         list_dob = dob_tuple_from_iso(entry.get("date_of_birth"))
-        found_same = None
-        found_diff = False
+        short_name = (list_name or "").split(",")[0].strip()
+        people = []
         for doc in docs:
             for off in doc.get("officers") or []:
-                if not name_eq(off.get("name"), list_name):
-                    continue
-                if list_dob and off.get("born_my"):
-                    if off["born_my"] == (list_dob[0], list_dob[1]):
-                        psc_docs = []
-                        still = False
-                        for d2 in docs:
-                            for p in d2.get("psc") or []:
-                                if name_eq(p.get("name"), list_name):
-                                    psc_docs.append(d2["doc_id"])
-                                    ceased = p.get("ceased")
-                                    if ceased is None or (pay_d and ceased >= pay_d):
-                                        still = True
-                        found_same = {
-                            "code": "ESC_LISTED_PARTY",
-                            "evidence": [x for x in [doc["doc_id"], entry_id] + psc_docs if x],
-                            "note": "the listed person matches an officer by name and birth month-year and still controlled the company at the payment date",
-                        }
-                    else:
-                        found_diff = True
+                people.append((doc, off.get("name"), off.get("born_my")))
+            for p in doc.get("psc") or []:
+                people.append((doc, p.get("name"), p.get("born_my")))
+        found_same = None
+        for doc, pname, born_my in people:
+            if not (name_eq(pname, list_name) or name_eq(pname, short_name)):
+                continue
+            if not (list_dob and born_my):
+                continue
+            if born_my != (list_dob[0], list_dob[1]):
+                continue
+            psc_docs = []
+            still = False
+            for d2 in docs:
+                for p in d2.get("psc") or []:
+                    if name_eq(p.get("name"), list_name) or name_eq(p.get("name"), short_name):
+                        psc_docs.append(d2["doc_id"])
+                        ceased = p.get("ceased")
+                        if ceased is None or (pay_d and ceased >= pay_d):
+                            still = True
+            if still or not psc_docs:
+                # Same person at payment date, or same birth and no cease date.
+                found_same = {
+                    "code": "ESC_LISTED_PARTY",
+                    "evidence": [x for x in [doc["doc_id"], entry_id] + psc_docs if x],
+                    "note": "the listed person matches an officer or PSC by name and birth month-year and still controlled the company at the payment date",
+                }
         if found_same:
             return found_same
-        # Different birth year, or no register on file: do not invent ESC_LISTED_PARTY.
         return None
     return None
 

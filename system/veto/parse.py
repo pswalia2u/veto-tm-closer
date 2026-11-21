@@ -186,7 +186,9 @@ def parse_doc(ev):
         "hr_login": False,
         "mule_chat": False,
         "instalments": "instalment" in text.lower() or "four instalments" in text.lower(),
-        "consultancy_goods": "business consultancy and market access" in text.lower(),
+        "consultancy_goods": dtype in {"invoice", "supplier_invoice", "supplier_invoices"} and (
+            "consultanc" in text.lower() or "market access" in text.lower()
+        ),
         "electronics_hk": ("handset" in text.lower() or "electronics" in title.lower()) and (
             "hong kong" in text.lower() or " hk" in text.lower() or "HK" in title
         ),
