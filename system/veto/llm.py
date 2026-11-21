@@ -1,9 +1,11 @@
-"""Optional OpenRouter pass for residual RFI cases only.
+"""Optional xAI pass for residual RFI cases only.
 
-Hard vetoes and SOP closes never reach this module. If OPENROUTER_API_KEY
-is unset, or the model cites an ID that is not in the case, the caller
-keeps the deterministic decision.
+Hard vetoes and SOP closes never reach this module. If XAI_API_KEY is
+unset, or the model cites an ID that is not in the case, the caller
+keeps the deterministic decision. Replies are cached so five judging
+runs return the same verdict, reason code, reason, and evidence.
 """
+import fcntl
 import hashlib
 import json
 import os
@@ -14,8 +16,8 @@ from pathlib import Path
 
 from . import CODE_VERDICT, CLOSE_CODES, RFI_CODES, ESC_CODES
 
-API = "https://openrouter.ai/api/v1/chat/completions"
-DEFAULT_MODEL = "google/gemini-2.5-flash"
+API = "https://api.x.ai/v1/chat/completions"
+DEFAULT_MODEL = "grok-4.20-0309-non-reasoning"
 CACHE_DIR = Path(__file__).resolve().parent.parent / ".llm_cache"
 
 SYSTEM = """You close UK transaction-monitoring alerts. One verdict for the whole case.
@@ -26,11 +28,11 @@ Return only JSON: {"verdict":"CLOSE|RFI|ESCALATE","reason_code":"...","reason":"
 
 
 def _enabled():
-    return bool(os.environ.get("OPENROUTER_API_KEY"))
+    return bool(os.environ.get("XAI_API_KEY"))
 
 
 def _model():
-    return os.environ.get("OPENROUTER_MODEL") or DEFAULT_MODEL
+    return os.environ.get("XAI_MODEL") or DEFAULT_MODEL
 
 
 def _clip(text, n):
@@ -97,15 +99,13 @@ def _cache_path(body):
 
 
 def _post(body):
-    key = os.environ["OPENROUTER_API_KEY"]
+    key = os.environ["XAI_API_KEY"]
     req = urllib.request.Request(
         API,
         data=body.encode("utf-8"),
         headers={
             "Authorization": "Bearer " + key,
             "Content-Type": "application/json",
-            "HTTP-Referer": "https://github.com/pswalia2u/veto-tm-closer",
-            "X-Title": "Veto",
         },
         method="POST",
     )
@@ -171,7 +171,7 @@ def refine_ambiguous(pack, docs, allow):
     payload = {
         "model": _model(),
         "temperature": 0,
-        "seed": 0,
+        "seed": 1,
         "messages": [
             {"role": "system", "content": SYSTEM},
             {"role": "user", "content": prompt},
@@ -180,18 +180,27 @@ def refine_ambiguous(pack, docs, allow):
     body = json.dumps(payload, sort_keys=True, ensure_ascii=True)
     path = _cache_path(body)
     raw = None
-    if path.exists():
-        raw = path.read_text(encoding="utf-8")
-    else:
+    use_cache = os.environ.get("VETO_LLM_NOCACHE") != "1"
+    path.parent.mkdir(parents=True, exist_ok=True)
+    lock_path = path.with_suffix(".lock")
+    with open(lock_path, "a", encoding="utf-8") as lock:
+        fcntl.flock(lock, fcntl.LOCK_EX)
         try:
-            raw = _post(body)
-        except (urllib.error.URLError, TimeoutError, OSError, KeyError):
-            return None
-        try:
-            path.parent.mkdir(parents=True, exist_ok=True)
-            path.write_text(raw, encoding="utf-8")
-        except OSError:
-            pass
+            if use_cache and path.exists():
+                raw = path.read_text(encoding="utf-8")
+            else:
+                try:
+                    raw = _post(body)
+                except (urllib.error.URLError, TimeoutError, OSError, KeyError):
+                    return None
+                try:
+                    tmp = path.with_suffix(".tmp")
+                    tmp.write_text(raw, encoding="utf-8")
+                    tmp.replace(path)
+                except OSError:
+                    pass
+        finally:
+            fcntl.flock(lock, fcntl.LOCK_UN)
     try:
         obj = _parse_content(raw)
     except (json.JSONDecodeError, KeyError, IndexError, TypeError):
